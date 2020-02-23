@@ -1,5 +1,5 @@
-const {authenticate, signup, fetchUsers} = require('./model/User')
-const {fetchCommandments} = require('./model/Commandment')
+const {authenticate, signup, fetchUsers,} = require('./model/User')
+const {fetchCommandments, fetchById} = require('./model/Views')
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
@@ -35,9 +35,21 @@ router.post('/signup', async (req,res) => {
     }
  })
 
+router.post('/addc', async (req,res) => {
+    try{
+      await signup(req,res)
+      res.status(201).json({signup : true})
+    } catch(err) {
+      console.log("eeee:",err)
+      res.status(400).json({error:err.message})
+    }
+ })
 router.get('/',  (req,res) => res.status(201).json({main:2}))
-router.get('/users',  async (req,res) => await fetchUsers(req,res))
-router.get('/commandments',  async (req,res) => await fetchCommandments(req,res))
+router.get('/users',  async (req,res) => await fetchUsers(req, res))
+router.get('/commandments',  async (req,res) => await fetchCommandments(req, res))
+router.get('/userboards',  async (req,res) => await fetchById(req, res, 'userboards'))
+router.get('/personal',  async (req,res) => await fetchById(req, res, 'personal'))
+
 
 router.get('/resources', async (req,res) => await User.authenticate(req,res,() => fetchResources(res))) 
 
